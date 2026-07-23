@@ -11,6 +11,10 @@ import {
   loginRequest,
   logoutRequest
 } from '../api/authApi';
+import {
+  setAccessToken,
+  clearAccessToken
+} from '../utils/authToken';
 
 export const AuthContext = createContext(null);
 
@@ -25,6 +29,7 @@ export function AuthProvider({ children }) {
     } catch {
       // sesión ya inválida
     } finally {
+      clearAccessToken();
       setUser(null);
       queryClient.clear();
     }
@@ -33,13 +38,14 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (credentials) => {
     const response = await loginRequest(credentials);
     const nextUser = response.data.usuario;
+    const token = response.data.accessToken || response.data.token;
+    if (token) setAccessToken(token);
     setUser(nextUser);
     return nextUser;
   }, []);
 
   useEffect(() => {
     let active = true;
-    // Migración Doc 8: eliminar JWT legado en localStorage
     try {
       localStorage.removeItem('inventory_pro_token');
     } catch {
@@ -47,6 +53,7 @@ export function AuthProvider({ children }) {
     }
 
     async function boot() {
+      // Si hay token en sessionStorage, Bearer ya irá en axios
       try {
         const response = await getPerfilRequest();
         if (active) {
@@ -58,7 +65,10 @@ export function AuthProvider({ children }) {
           });
         }
       } catch {
-        if (active) setUser(null);
+        if (active) {
+          clearAccessToken();
+          setUser(null);
+        }
       } finally {
         if (active) setBooting(false);
       }

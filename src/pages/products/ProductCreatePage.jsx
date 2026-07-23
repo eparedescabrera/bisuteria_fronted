@@ -234,7 +234,7 @@ export default function ProductCreatePage() {
           <FormField
             label="Imágenes (máx. 6)"
             name="imagenes"
-            hint="JPG, PNG o WEBP · máx. 5 MB c/u · Doc 3"
+            hint="JPG, PNG o WEBP · se comprimen al subir · máx. 6 fotos"
           >
             <input
               id="imagenes"

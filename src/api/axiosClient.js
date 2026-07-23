@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { getCsrfToken } from '../utils/csrf';
+import { getAccessToken, setAccessToken, clearAccessToken } from '../utils/authToken';
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -10,7 +11,6 @@ const api = axios.create({
   withCredentials: true
 });
 
-/** Cliente sin interceptores 401 para evitar bucles en refresh */
 const refreshClient = axios.create({
   baseURL,
   timeout: 15000,
@@ -21,6 +21,11 @@ let refreshPromise = null;
 
 api.interceptors.request.use((config) => {
   const method = (config.method || 'get').toLowerCase();
+  const token = getAccessToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
   if (['post', 'put', 'patch', 'delete'].includes(method)) {
     const csrf = getCsrfToken();
     if (csrf) {
@@ -30,6 +35,8 @@ api.interceptors.request.use((config) => {
 
   if (config.data instanceof FormData) {
     delete config.headers['Content-Type'];
+    // Subidas a Cloudinary pueden tardar más
+    config.timeout = 120000;
   }
 
   return config;
@@ -54,6 +61,11 @@ api.interceptors.response.use(
         if (!refreshPromise) {
           refreshPromise = refreshClient
             .post('/auth/refresh')
+            .then((res) => {
+              const next = res.data?.data?.accessToken || res.data?.data?.token;
+              if (next) setAccessToken(next);
+              return res;
+            })
             .finally(() => {
               refreshPromise = null;
             });
@@ -61,6 +73,7 @@ api.interceptors.response.use(
         await refreshPromise;
         return api(original);
       } catch {
+        clearAccessToken();
         if (!window.location.pathname.startsWith('/login')) {
           window.location.href = '/login';
         }

@@ -16,9 +16,15 @@ export function formatDate(value) {
 }
 
 export function getApiErrorMessage(error, fallback = 'Ocurrió un error') {
-  return (
-    error?.response?.data?.message ||
-    error?.message ||
-    fallback
-  );
+  if (!error?.response) {
+    const msg = String(error?.message || '');
+    if (error?.code === 'ECONNABORTED' || msg.includes('timeout')) {
+      return 'La solicitud tardó demasiado. Intente con menos imágenes o archivos más livianos.';
+    }
+    if (msg.includes('ERR_HTTP2') || msg.includes('Network Error')) {
+      return 'Falló la subida (conexión con el servidor). Intente con imágenes más pequeñas o sin imagen y agréguela después.';
+    }
+    return 'No hay conexión con el servidor. Verifique su red o vuelva a iniciar sesión.';
+  }
+  return error.response.data?.message || error.message || fallback;
 }
