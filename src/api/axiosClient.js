@@ -49,12 +49,18 @@ api.interceptors.response.use(
     const status = error.response?.status;
     const url = String(original?.url || '');
 
+    const isAuthBootstrap =
+      url.includes('/auth/me') ||
+      url.includes('/auth/login') ||
+      url.includes('/auth/refresh');
+    const isPublicApi = url.includes('/public/');
+
     if (
       status === 401 &&
       original &&
       !original._retry &&
-      !url.includes('/auth/login') &&
-      !url.includes('/auth/refresh')
+      !isAuthBootstrap &&
+      !isPublicApi
     ) {
       original._retry = true;
       try {
@@ -74,9 +80,39 @@ api.interceptors.response.use(
         return api(original);
       } catch {
         clearAccessToken();
-        if (!window.location.pathname.startsWith('/login')) {
+        const path = window.location.pathname || '';
+        // Solo expulsar al login si estaba en el panel admin
+        if (path.startsWith('/admin')) {
           window.location.href = '/login';
         }
+      }
+    }
+
+    // /auth/me en el arranque: intentar refresh sin botar al visitante del catálogo
+    if (
+      status === 401 &&
+      original &&
+      !original._retry &&
+      url.includes('/auth/me')
+    ) {
+      original._retry = true;
+      try {
+        if (!refreshPromise) {
+          refreshPromise = refreshClient
+            .post('/auth/refresh')
+            .then((res) => {
+              const next = res.data?.data?.accessToken || res.data?.data?.token;
+              if (next) setAccessToken(next);
+              return res;
+            })
+            .finally(() => {
+              refreshPromise = null;
+            });
+        }
+        await refreshPromise;
+        return api(original);
+      } catch {
+        clearAccessToken();
       }
     }
 
