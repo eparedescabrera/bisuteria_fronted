@@ -22,11 +22,11 @@ export default function AdminLayout() {
   else if (/\/admin\/productos\/\d+$/.test(location.pathname)) title = 'Detalle producto';
 
   return (
-    <div className="min-h-screen bg-slate-100 lg:flex">
+    <div className="min-h-svh overflow-x-hidden bg-slate-100 lg:flex">
       <Sidebar open={open} onClose={() => setOpen(false)} />
-      <div className="flex min-h-screen flex-1 flex-col">
+      <div className="flex min-h-svh min-w-0 flex-1 flex-col">
         <Topbar title={title} onMenu={() => setOpen(true)} />
-        <main className="flex-1 px-4 py-5 sm:px-6">
+        <main className="min-w-0 flex-1 px-3 py-4 sm:px-6 sm:py-5">
           <Outlet />
         </main>
       </div>

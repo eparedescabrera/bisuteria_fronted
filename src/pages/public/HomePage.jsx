@@ -111,7 +111,7 @@ export default function HomePage() {
                   {/* Overlay suave: más claro en móvil para ver la pieza */}
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(61,44,41,0.15)_0%,rgba(61,44,41,0.2)_40%,rgba(61,44,41,0.72)_78%,rgba(31,22,20,0.92)_100%)] sm:bg-[linear-gradient(180deg,rgba(61,44,41,0.2)_0%,rgba(61,44,41,0.25)_45%,rgba(61,44,41,0.78)_80%,rgba(31,22,20,0.94)_100%)]" />
 
-                  <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pb-14 pt-20 text-[#faf7f2] sm:pb-16 sm:pt-24">
+                  <div className="relative z-10 mx-auto w-full max-w-6xl px-3 pb-14 pt-20 text-[#faf7f2] sm:px-4 sm:pb-16 sm:pt-24">
                     <motion.p
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -123,7 +123,7 @@ export default function HomePage() {
                       initial={{ opacity: 0, y: 18 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.08 }}
-                      className="mt-2 max-w-2xl font-[family-name:Georgia,serif] text-[2rem] leading-tight sm:mt-3 sm:text-5xl md:text-6xl"
+                      className="mt-2 max-w-2xl break-words font-[family-name:Georgia,serif] text-[1.75rem] leading-tight sm:mt-3 sm:text-5xl md:text-6xl"
                     >
                       {slide.title}
                     </motion.h1>

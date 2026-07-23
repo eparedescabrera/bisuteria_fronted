@@ -7,7 +7,7 @@ import WhatsAppFab from '../components/public/WhatsAppFab';
 export default function PublicLayout() {
   return (
     <CatalogProvider>
-      <div className="min-h-screen bg-[#faf7f2] text-[#3d2c29]">
+      <div className="min-h-svh overflow-x-hidden bg-[#faf7f2] text-[#3d2c29]">
         <PublicNavbar />
         <main id="contenido-principal">
           <Outlet />

@@ -203,32 +203,41 @@ export default function ProductsPage() {
       ) : (
         <>
           <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-            <table className="min-w-full text-left text-sm">
+            <table className="min-w-[720px] w-full text-left text-sm sm:min-w-full">
               <thead className="bg-slate-50 text-slate-500">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Producto</th>
-                  <th className="px-4 py-3 font-medium">Categoría</th>
-                  <th className="px-4 py-3 font-medium">Precio</th>
-                  <th className="px-4 py-3 font-medium">Stock</th>
-                  <th className="px-4 py-3 font-medium">Estado</th>
-                  <th className="px-4 py-3 font-medium">Acciones</th>
+                  <th className="px-3 py-3 font-medium sm:px-4">Producto</th>
+                  <th className="hidden px-3 py-3 font-medium sm:table-cell sm:px-4">
+                    Categoría
+                  </th>
+                  <th className="px-3 py-3 font-medium sm:px-4">Precio</th>
+                  <th className="px-3 py-3 font-medium sm:px-4">Stock</th>
+                  <th className="px-3 py-3 font-medium sm:px-4">Estado</th>
+                  <th className="px-3 py-3 font-medium sm:px-4">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((item) => (
                   <tr key={item.id_producto} className="border-t border-slate-100">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
+                    <td className="px-3 py-3 sm:px-4">
+                      <div className="flex max-w-[14rem] items-center gap-3 sm:max-w-none">
                         <ProductImage src={item.imagen_principal} alt={item.nombre} />
-                        <div>
-                          <p className="font-medium text-slate-800">{item.nombre}</p>
-                          <p className="text-xs text-slate-500">{item.codigo}</p>
+                        <div className="min-w-0">
+                          <p className="truncate font-medium text-slate-800">{item.nombre}</p>
+                          <p className="truncate text-xs text-slate-500">{item.codigo}</p>
+                          <p className="mt-0.5 text-xs text-slate-500 sm:hidden">
+                            {item.categoria}
+                          </p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">{item.categoria}</td>
-                    <td className="px-4 py-3">{formatCRC(item.precio_venta)}</td>
-                    <td className="px-4 py-3">
+                    <td className="hidden px-3 py-3 sm:table-cell sm:px-4">
+                      {item.categoria}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-3 sm:px-4">
+                      {formatCRC(item.precio_venta)}
+                    </td>
+                    <td className="px-3 py-3 sm:px-4">
                       <span
                         className={
                           item.stock_actual <= item.stock_minimo
@@ -239,7 +248,7 @@ export default function ProductsPage() {
                         {item.stock_actual}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-3 sm:px-4">
                       <div className="flex flex-col gap-1">
                         <Badge
                           tone={item.estado_publicacion === 'Publicado' ? 'green' : 'slate'}
@@ -255,8 +264,8 @@ export default function ProductsPage() {
                         </Badge>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap gap-2">
+                    <td className="px-3 py-3 sm:px-4">
+                      <div className="flex max-w-[16rem] flex-wrap gap-2 sm:max-w-none">
                         <Link to={`/admin/productos/${item.id_producto}`}>
                           <Button variant="secondary">Ver</Button>
                         </Link>

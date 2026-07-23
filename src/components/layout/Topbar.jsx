@@ -25,7 +25,9 @@ export default function Topbar({ title, onMenu }) {
           </button>
           <div>
             <p className="text-xs text-slate-500">Panel administrativo</p>
-            <h2 className="text-base font-semibold text-slate-900 sm:text-lg">{title}</h2>
+            <h2 className="truncate text-base font-semibold text-slate-900 sm:text-lg">
+              {title}
+            </h2>
           </div>
         </div>
         <div className="flex items-center gap-3">

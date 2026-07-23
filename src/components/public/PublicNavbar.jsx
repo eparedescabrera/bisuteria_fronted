@@ -33,20 +33,20 @@ export default function PublicNavbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-stone-200/80 bg-[#faf7f2]/95 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
-        <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="Inicio">
+      <div className="mx-auto flex max-w-6xl items-center gap-2 px-3 py-3 sm:gap-4 sm:px-4">
+        <Link to="/" className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3" aria-label="Inicio">
           {config?.logo_url ? (
             <img
               src={cloudinaryUrl(config.logo_url, { width: 96 })}
               alt={config.nombre_negocio || 'Logo'}
-              className="h-10 w-10 rounded-full object-cover"
+              className="h-9 w-9 shrink-0 rounded-full object-cover sm:h-10 sm:w-10"
             />
           ) : (
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#3d2c29] text-sm font-semibold text-[#f3e6d8]">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#3d2c29] text-sm font-semibold text-[#f3e6d8] sm:h-10 sm:w-10">
               AA
             </span>
           )}
-          <span className="truncate font-[family-name:Georgia,serif] text-lg text-[#3d2c29]">
+          <span className="truncate font-[family-name:Georgia,serif] text-base text-[#3d2c29] sm:text-lg">
             {config?.nombre_negocio || 'Accesorios Anny'}
           </span>
         </Link>
@@ -80,7 +80,7 @@ export default function PublicNavbar() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Buscar accesorios…"
-            className="w-44 bg-transparent text-sm outline-none"
+            className="w-36 bg-transparent text-sm outline-none xl:w-44"
             aria-label="Buscar productos"
           />
         </form>
@@ -99,7 +99,7 @@ export default function PublicNavbar() {
 
         <button
           type="button"
-          className="rounded-lg p-2 text-[#3d2c29] md:hidden"
+          className="shrink-0 rounded-lg p-2 text-[#3d2c29] md:hidden"
           aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
