@@ -1,10 +1,14 @@
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Outlet } from 'react-router-dom';
 import { getPublicConfig } from '../services/publicApi';
 import { APP_NAME } from '../utils/constants';
 import { cloudinaryUrl } from '../utils/publicHelpers';
+import { enableAdminPwa } from '../utils/adminPwa';
 
 export default function AuthLayout() {
+  useEffect(() => enableAdminPwa(), []);
+
   const configQuery = useQuery({
     queryKey: ['public', 'configuracion'],
     queryFn: getPublicConfig,

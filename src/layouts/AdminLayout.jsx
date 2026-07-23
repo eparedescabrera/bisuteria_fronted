@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
 import Topbar from '../components/layout/Topbar';
+import { enableAdminPwa } from '../utils/adminPwa';
 
 const titles = {
   '/admin': 'Dashboard',
@@ -16,6 +17,8 @@ const titles = {
 export default function AdminLayout() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+
+  useEffect(() => enableAdminPwa(), []);
 
   let title = titles[location.pathname] || 'Administración';
   if (location.pathname.includes('/editar')) title = 'Editar producto';
