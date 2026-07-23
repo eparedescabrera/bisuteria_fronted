@@ -3,10 +3,10 @@
  * en proxies (Railway) con multipart grandes.
  */
 export async function compressImageFile(file, options = {}) {
-  const maxWidth = options.maxWidth || 1400;
-  const maxHeight = options.maxHeight || 1400;
-  const quality = options.quality || 0.78;
-  const maxBytes = options.maxBytes || 900 * 1024;
+  const maxWidth = options.maxWidth || 1200;
+  const maxHeight = options.maxHeight || 1200;
+  const quality = options.quality || 0.72;
+  const maxBytes = options.maxBytes || 600 * 1024;
 
   if (!file?.type?.startsWith('image/')) return file;
   // No recomprimir si ya es liviana

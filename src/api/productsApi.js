@@ -34,7 +34,20 @@ export async function createProduct(payload, files = []) {
   const id = data?.data?.id_producto;
 
   if (id && files.length) {
-    await addProductImages(id, files.slice(0, 6));
+    try {
+      await addProductImages(id, files.slice(0, 6));
+    } catch (error) {
+      const base =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Error al subir imágenes';
+      const enriched = new Error(
+        `${base}. El producto (#${id}) sí se creó; agregue las fotos desde el detalle.`
+      );
+      enriched.response = error.response;
+      enriched.productId = id;
+      throw enriched;
+    }
   }
 
   return data;
