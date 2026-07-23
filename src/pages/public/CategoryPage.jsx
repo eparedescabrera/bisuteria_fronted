@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import Seo from '../../components/public/Seo';
 import ProductCard from '../../components/public/ProductCard';
@@ -48,28 +49,37 @@ export default function CategoryPage() {
         image={category?.imagen_url}
       />
 
-      <section className="relative overflow-hidden bg-[#3d2c29] text-[#f3e6d8]">
+      <section className="relative min-h-[220px] overflow-hidden bg-[#3d2c29] text-[#f3e6d8] sm:min-h-[280px]">
         {category?.imagen_url ? (
           <img
             src={cloudinaryUrl(category.imagen_url, { width: 1400 })}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover opacity-35"
+            className="absolute inset-0 h-full w-full object-cover opacity-40"
           />
         ) : null}
-        <div className="relative mx-auto max-w-6xl px-4 py-16">
-          <p className="text-xs uppercase tracking-[0.2em] text-[#e8d5c4]">Categoría</p>
-          <h1 className="mt-2 font-[family-name:Georgia,serif] text-4xl sm:text-5xl">
-            {category?.nombre || '…'}
-          </h1>
-          {category?.descripcion ? (
-            <p className="mt-3 max-w-2xl text-[#f3e6d8]/85">{category.descripcion}</p>
-          ) : null}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1f1614]/90 via-[#3d2c29]/40 to-transparent" />
+        <div className="relative mx-auto flex min-h-[220px] max-w-6xl items-end px-4 py-12 sm:min-h-[280px] sm:py-16">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+          >
+            <p className="text-xs uppercase tracking-[0.2em] text-[#e8d5c4]">Categoría</p>
+            <h1 className="mt-2 font-[family-name:Georgia,serif] text-3xl sm:text-5xl">
+              {category?.nombre || '…'}
+            </h1>
+            {category?.descripcion ? (
+              <p className="mt-3 max-w-2xl text-sm text-[#f3e6d8]/85 sm:text-base">
+                {category.descripcion}
+              </p>
+            ) : null}
+          </motion.div>
         </div>
       </section>
 
       <div className="mx-auto max-w-6xl px-4 py-10">
         {productsQuery.isLoading ? (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
               <ProductCardSkeleton key={i} />
             ))}
@@ -77,7 +87,7 @@ export default function CategoryPage() {
         ) : products.length === 0 ? (
           <p className="text-center text-stone-500">No hay productos en esta categoría.</p>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
             {products.map((p) => (
               <ProductCard key={p.id_producto} product={p} />
             ))}

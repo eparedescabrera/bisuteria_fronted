@@ -76,10 +76,45 @@ export default function PublicProductsPage() {
       />
 
       <div className="mx-auto max-w-6xl px-4 py-10">
-        <div className="mb-8">
+        <div className="mb-6">
           <p className="text-xs uppercase tracking-[0.2em] text-stone-500">Catálogo</p>
-          <h1 className="mt-2 font-[family-name:Georgia,serif] text-4xl">Productos</h1>
+          <h1 className="mt-2 font-[family-name:Georgia,serif] text-3xl sm:text-4xl">
+            Productos
+          </h1>
         </div>
+
+        {categories.length > 0 ? (
+          <div className="-mx-4 mb-5 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+            <button
+              type="button"
+              onClick={() => updateParam('categoria', '')}
+              className={`shrink-0 rounded-full px-4 py-1.5 text-sm transition ${
+                !searchParams.get('categoria')
+                  ? 'bg-[#3d2c29] text-[#f3e6d8]'
+                  : 'bg-white text-[#3d2c29] ring-1 ring-stone-200 hover:bg-stone-50'
+              }`}
+            >
+              Todas
+            </button>
+            {categories.map((c) => {
+              const active = searchParams.get('categoria') === c.slug;
+              return (
+                <button
+                  key={c.id_categoria}
+                  type="button"
+                  onClick={() => updateParam('categoria', c.slug)}
+                  className={`shrink-0 rounded-full px-4 py-1.5 text-sm transition ${
+                    active
+                      ? 'bg-[#3d2c29] text-[#f3e6d8]'
+                      : 'bg-white text-[#3d2c29] ring-1 ring-stone-200 hover:bg-stone-50'
+                  }`}
+                >
+                  {c.nombre}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
 
         <div className="mb-6 grid gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-stone-200 md:grid-cols-2 lg:grid-cols-5">
           <label className="block text-sm">

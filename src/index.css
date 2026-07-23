@@ -19,3 +19,28 @@ body {
 #root {
   min-height: 100vh;
 }
+
+/* Slider público: paginación legible en móvil */
+.public-hero-swiper .swiper-pagination {
+  bottom: 1rem !important;
+}
+
+.public-hero-swiper .swiper-pagination-bullet {
+  background: rgba(250, 247, 242, 0.55);
+  opacity: 1;
+  width: 0.55rem;
+  height: 0.55rem;
+  transition: width 0.25s ease, background 0.25s ease;
+}
+
+.public-hero-swiper .swiper-pagination-bullet-active {
+  background: #f3e6d8;
+  width: 1.35rem;
+  border-radius: 999px;
+}
+
+@media (min-width: 640px) {
+  .public-hero-swiper .swiper-pagination {
+    bottom: 1.25rem !important;
+  }
+}

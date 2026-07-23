@@ -25,7 +25,7 @@ export default function ProductCard({ product }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.35 }}
-      className="group overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-stone-200 transition hover:-translate-y-1 hover:shadow-md"
+      className="group overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-stone-200 transition duration-300 hover:-translate-y-1.5 hover:shadow-lg hover:ring-[#3d2c29]/15"
     >
       <Link to={`/producto/${product.slug}`} className="block">
         <div className="relative aspect-[4/5] overflow-hidden bg-stone-100">
