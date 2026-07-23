@@ -8,6 +8,7 @@ import {
   addProductImages,
   deleteProductImage,
   getProduct,
+  patchDisponibilidad,
   setPrincipalImage,
   updateProduct
 } from '../../api/productsApi';
@@ -79,8 +80,8 @@ export default function ProductEditPage() {
   }, [productQuery.data, reset]);
 
   const saveMutation = useMutation({
-    mutationFn: (values) =>
-      updateProduct(id, {
+    mutationFn: async (values) => {
+      const payload = {
         ...values,
         precio_anterior:
           values.precio_anterior === '' || values.precio_anterior == null
@@ -91,7 +92,18 @@ export default function ProductEditPage() {
         marca: values.marca || null,
         color_estilo: values.color_estilo || null,
         material: values.material || null
-      }),
+      };
+
+      const updated = await updateProduct(id, payload);
+
+      // Disponibilidad (Disponible / Agotado / Proximamente / Descontinuado)
+      // se guarda por endpoint propio: no depende del stock.
+      if (values.estado_disponibilidad) {
+        await patchDisponibilidad(id, values.estado_disponibilidad);
+      }
+
+      return updated;
+    },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['producto', id] });
       await queryClient.invalidateQueries({ queryKey: ['productos'] });
@@ -238,7 +250,11 @@ export default function ProductEditPage() {
             ))}
           </select>
         </FormField>
-        <FormField label="Disponibilidad" name="estado_disponibilidad">
+        <FormField
+          label="Disponibilidad"
+          name="estado_disponibilidad"
+          hint="Próximamente y Descontinuado no dependen del stock; el inventario no los cambia solo."
+        >
           <select
             id="estado_disponibilidad"
             className={inputClass}
