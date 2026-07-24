@@ -6,7 +6,8 @@ import { loginSchema } from '../../schemas/authSchema';
 import { useAuth } from '../../hooks/useAuth';
 import FormField, { inputClass } from '../../components/forms/FormField';
 import Button from '../../components/common/Button';
-import { getApiErrorMessage } from '../../utils/formatters';
+
+const LOGIN_FAIL_MSG = 'Credenciales incorrectas';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -17,6 +18,7 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
+    resetField,
     formState: { errors, isSubmitting }
   } = useForm({
     resolver: zodResolver(loginSchema),
@@ -27,10 +29,19 @@ export default function LoginPage() {
     setApiError('');
     try {
       await login(values);
+      // Limpiar contraseña de la memoria del formulario tras éxito
+      resetField('password');
       const redirectTo = location.state?.from?.pathname || '/admin';
-      navigate(redirectTo, { replace: true });
-    } catch (error) {
-      setApiError(getApiErrorMessage(error, 'Credenciales incorrectas'));
+      // Solo redirigir a rutas admin internas
+      const safeTarget =
+        typeof redirectTo === 'string' && redirectTo.startsWith('/admin')
+          ? redirectTo
+          : '/admin';
+      navigate(safeTarget, { replace: true });
+    } catch {
+      // Mensaje genérico: no filtrar si el usuario existe ni detalles del servidor
+      setApiError(LOGIN_FAIL_MSG);
+      resetField('password');
     }
   };
 
@@ -45,6 +56,9 @@ export default function LoginPage() {
           id="nombre_usuario"
           className={inputClass}
           autoComplete="username"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           {...register('nombre_usuario')}
         />
       </FormField>
@@ -60,7 +74,9 @@ export default function LoginPage() {
       </FormField>
 
       {apiError ? (
-        <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{apiError}</div>
+        <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+          {apiError}
+        </div>
       ) : null}
 
       <Button type="submit" className="w-full" loading={isSubmitting}>
