@@ -3,11 +3,13 @@ import { FaFacebook, FaInstagram, FaMapMarkerAlt, FaWhatsapp } from 'react-icons
 import { useCatalog } from '../../context/CatalogContext';
 import { useTiendaPath } from '../../hooks/useTiendaPath';
 import { buildWhatsAppUrl, cloudinaryUrl } from '../../utils/publicHelpers';
+import { DEFAULT_TIENDA_SLUG } from '../../utils/tienda';
 
 export default function PublicFooter() {
-  const { config } = useCatalog();
+  const { config, tiendaSlug } = useCatalog();
   const tp = useTiendaPath();
   const wa = buildWhatsAppUrl(config?.whatsapp, 'Hola, deseo más información.');
+  const isOfficialStore = tiendaSlug === DEFAULT_TIENDA_SLUG;
 
   return (
     <footer className="mt-16 border-t border-stone-200 bg-[#3d2c29] text-[#f3e6d8]">
@@ -52,6 +54,13 @@ export default function PublicFooter() {
                 Contacto
               </Link>
             </li>
+            {isOfficialStore ? (
+              <li>
+                <Link to="/suscribirse" className="font-medium hover:underline">
+                  Suscribirse a la plataforma
+                </Link>
+              </li>
+            ) : null}
             {config?.direccion ? <li>{config.direccion}</li> : null}
             {config?.mapa_url ? (
               <li>

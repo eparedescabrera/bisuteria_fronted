@@ -5,13 +5,15 @@ import { FaWhatsapp } from 'react-icons/fa';
 import { useCatalog } from '../../context/CatalogContext';
 import { useTiendaPath } from '../../hooks/useTiendaPath';
 import { buildWhatsAppUrl, cloudinaryUrl } from '../../utils/publicHelpers';
+import { DEFAULT_TIENDA_SLUG } from '../../utils/tienda';
 
 export default function PublicNavbar() {
-  const { config } = useCatalog();
+  const { config, tiendaSlug } = useCatalog();
   const tp = useTiendaPath();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState('');
+  const isOfficialStore = tiendaSlug === DEFAULT_TIENDA_SLUG;
 
   const links = [
     { to: tp('/'), label: 'Inicio', end: true },
@@ -95,6 +97,15 @@ export default function PublicNavbar() {
           />
         </form>
 
+        {isOfficialStore ? (
+          <Link
+            to="/suscribirse"
+            className="hidden rounded-full bg-[#3d2c29] px-3 py-2 text-sm font-medium text-[#f3e6d8] transition hover:bg-[#2a1e1c] md:inline-flex"
+          >
+            Suscribirse
+          </Link>
+        ) : null}
+
         {wa ? (
           <a
             href={wa}
@@ -146,6 +157,15 @@ export default function PublicNavbar() {
                 {link.label}
               </Link>
             ))}
+            {isOfficialStore ? (
+              <Link
+                to="/suscribirse"
+                onClick={() => setOpen(false)}
+                className="mt-2 rounded-xl bg-[#3d2c29] px-3 py-2.5 text-center font-medium text-[#f3e6d8]"
+              >
+                Suscribirse
+              </Link>
+            ) : null}
           </div>
         </div>
       ) : null}
