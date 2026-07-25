@@ -117,12 +117,13 @@ export default function HomePage() {
     <>
       <Seo
         title="Inicio"
+        siteName={brand}
         description={
           config?.descripcion ||
           `${brand}. Catálogo público y consulta por WhatsApp.`
         }
         keywords="bisutería, accesorios, pulseras, collares, aretes, Costa Rica"
-        path="/"
+        path={tp('/')}
         image={seoImage}
       />
 

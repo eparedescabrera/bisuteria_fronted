@@ -18,15 +18,18 @@ import ErrorState from '../../components/feedback/ErrorState';
 import { toastError, toastSuccess } from '../../components/feedback/alerts';
 import { getApiErrorMessage } from '../../utils/formatters';
 import { WHATSAPP_COUNTRY_CODE } from '../../utils/constants';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function SettingsPage() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [logoFile, setLogoFile] = useState(null);
   const [portadaFile, setPortadaFile] = useState(null);
 
   const query = useQuery({
-    queryKey: ['configuracion'],
-    queryFn: getSettings
+    queryKey: ['configuracion', user?.id_empresa ?? 'none'],
+    queryFn: getSettings,
+    enabled: Boolean(user?.id_empresa)
   });
 
   const {

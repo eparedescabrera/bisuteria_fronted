@@ -6,16 +6,18 @@ export default function Seo({
   keywords,
   path = '/',
   image,
-  type = 'website'
+  type = 'website',
+  /** Nombre de la tienda actual (cada empresa es independiente) */
+  siteName
 }) {
-  const site = import.meta.env.VITE_APP_NAME || 'Accesorios Anny';
+  const site = siteName || 'Tienda';
   const base = import.meta.env.VITE_PUBLIC_SITE_URL || window.location.origin;
   const fullTitle = title ? `${title} | ${site}` : site;
   const desc =
     description ||
-    'Bisutería y accesorios artesanales. Consulta disponibilidad por WhatsApp.';
-  const canonical = `${base.replace(/\/$/, '')}${path}`;
-  const ogImage = image || `${base}/og-default.jpg`;
+    `${site}. Consulta disponibilidad por WhatsApp.`;
+  const canonical = `${base.replace(/\/$/, '')}${path.startsWith('/') ? path : `/${path}`}`;
+  const ogImage = image || undefined;
 
   return (
     <Helmet>
@@ -27,11 +29,11 @@ export default function Seo({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={desc} />
       <meta property="og:url" content={canonical} />
-      <meta property="og:image" content={ogImage} />
+      {ogImage ? <meta property="og:image" content={ogImage} /> : null}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={desc} />
-      <meta name="twitter:image" content={ogImage} />
+      {ogImage ? <meta name="twitter:image" content={ogImage} /> : null}
     </Helmet>
   );
 }

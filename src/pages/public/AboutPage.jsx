@@ -1,20 +1,23 @@
 import Seo from '../../components/public/Seo';
 import { useCatalog } from '../../context/CatalogContext';
+import { useTiendaPath } from '../../hooks/useTiendaPath';
 
 export default function AboutPage() {
   const { config } = useCatalog();
+  const tp = useTiendaPath();
 
   return (
     <>
       <Seo
         title="Nosotros"
-        description={`Conoce la historia de ${config?.nombre_negocio || 'Accesorios Anny'}.`}
-        path="/nosotros"
+        siteName={config?.nombre_negocio}
+        description={`Conoce la historia de ${config?.nombre_negocio || 'esta tienda'}.`}
+        path={tp('/nosotros')}
       />
       <div className="mx-auto max-w-4xl px-4 py-12">
         <p className="text-xs uppercase tracking-[0.2em] text-stone-500">Nosotros</p>
         <h1 className="mt-2 font-[family-name:Georgia,serif] text-4xl">
-          {config?.nombre_negocio || 'Accesorios Anny'}
+          {config?.nombre_negocio || 'Tienda'}
         </h1>
         <p className="mt-4 text-lg text-stone-600">
           {config?.descripcion ||

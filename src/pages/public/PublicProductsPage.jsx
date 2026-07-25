@@ -24,7 +24,7 @@ const ORDENES = [
 ];
 
 export default function PublicProductsPage() {
-  const { tiendaSlug } = useCatalog();
+  const { config, tiendaSlug } = useCatalog();
   const tp = useTiendaPath();
   const [searchParams, setSearchParams] = useSearchParams();
   const [busqueda, setBusqueda] = useState(searchParams.get('busqueda') || '');
@@ -74,8 +74,9 @@ export default function PublicProductsPage() {
     <>
       <Seo
         title="Productos"
-        description="Explora el catálogo de Accesorios Anny. Filtra por categoría, precio y disponibilidad."
-        path="/productos"
+        siteName={config?.nombre_negocio}
+        description={`Explora el catálogo de ${config?.nombre_negocio || 'la tienda'}. Filtra por categoría, precio y disponibilidad.`}
+        path={tp('/productos')}
         keywords="catálogo, bisutería, productos, accesorios"
       />
 

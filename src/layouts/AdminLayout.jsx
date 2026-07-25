@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Outlet, useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import Sidebar from '../components/layout/Sidebar';
 import Topbar from '../components/layout/Topbar';
 import { enableAdminPwa } from '../utils/adminPwa';
+import { getSettings } from '../api/settingsApi';
+import { useAuth } from '../hooks/useAuth';
 
 const titles = {
   '/admin': 'Dashboard',
@@ -17,8 +21,18 @@ const titles = {
 export default function AdminLayout() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
 
-  useEffect(() => enableAdminPwa(), []);
+  const settingsQuery = useQuery({
+    queryKey: ['configuracion', user?.id_empresa ?? 'none'],
+    queryFn: getSettings,
+    staleTime: 5 * 60 * 1000,
+    enabled: Boolean(user?.id_empresa)
+  });
+
+  const brand = settingsQuery.data?.data?.nombre_negocio || 'Mi negocio';
+
+  useEffect(() => enableAdminPwa({ brand }), [brand]);
 
   let title = titles[location.pathname] || 'Administración';
   if (location.pathname.includes('/editar')) title = 'Editar producto';
@@ -26,6 +40,11 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-svh overflow-x-hidden bg-slate-100 lg:flex">
+      <Helmet>
+        <title>
+          {title} | {brand}
+        </title>
+      </Helmet>
       <Sidebar open={open} onClose={() => setOpen(false)} />
       <div className="flex min-h-svh min-w-0 flex-1 flex-col">
         <Topbar title={title} onMenu={() => setOpen(true)} />

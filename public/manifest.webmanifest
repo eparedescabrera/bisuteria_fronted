@@ -1,7 +1,7 @@
 {
-  "name": "Accesorios Anny Admin",
-  "short_name": "Anny Admin",
-  "description": "Panel administrativo de Accesorios Anny",
+  "name": "Panel Admin",
+  "short_name": "Admin",
+  "description": "Panel administrativo multiempresa",
   "id": "/admin",
   "start_url": "/login",
   "scope": "/",

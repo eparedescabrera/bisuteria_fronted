@@ -1,5 +1,5 @@
 /* Service worker del panel administrativo (login + /admin). */
-const CACHE = 'anny-admin-v1';
+const CACHE = 'panel-admin-v1';
 const PRECACHE = [
   '/login',
   '/manifest.webmanifest',

@@ -58,6 +58,7 @@ export default function PublicProductDetailPage() {
       <div className="mx-auto max-w-3xl px-4 py-20 text-center">
         <Seo
           title={status === 404 ? 'Producto no encontrado' : 'Error'}
+          siteName={config?.nombre_negocio}
           path={tp(`/producto/${slug}`)}
         />
         <h1 className="font-[family-name:Georgia,serif] text-3xl">
@@ -84,6 +85,7 @@ export default function PublicProductDetailPage() {
     <>
       <Seo
         title={p.nombre}
+        siteName={config?.nombre_negocio}
         description={p.descripcion_corta || p.descripcion_completa || p.nombre}
         path={tp(`/producto/${p.slug}`)}
         image={current?.imagen_url}

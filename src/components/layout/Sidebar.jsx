@@ -7,11 +7,13 @@ import {
   Boxes,
   FileBarChart,
   Settings,
+  ExternalLink,
   X
 } from 'lucide-react';
 import { getSettings } from '../../api/settingsApi';
-import { APP_NAME } from '../../utils/constants';
+import { useAuth } from '../../hooks/useAuth';
 import { cloudinaryUrl } from '../../utils/publicHelpers';
+import { publicTiendaUrl } from '../../utils/tienda';
 
 const links = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
@@ -23,17 +25,21 @@ const links = [
 ];
 
 export default function Sidebar({ open, onClose }) {
+  const { user } = useAuth();
   const settingsQuery = useQuery({
-    queryKey: ['configuracion'],
+    queryKey: ['configuracion', user?.id_empresa ?? 'none'],
     queryFn: getSettings,
-    staleTime: 5 * 60 * 1000
+    staleTime: 5 * 60 * 1000,
+    enabled: Boolean(user?.id_empresa)
   });
 
   const config = settingsQuery.data?.data;
-  const brand = config?.nombre_negocio || APP_NAME;
+  const brand = config?.nombre_negocio || 'Mi negocio';
   const logoUrl = config?.logo_url
     ? cloudinaryUrl(config.logo_url, { width: 96 })
     : null;
+  const tiendaSlug = config?.tienda_slug;
+  const tiendaHref = tiendaSlug ? publicTiendaUrl(tiendaSlug) : null;
 
   return (
     <>
@@ -57,11 +63,13 @@ export default function Sidebar({ open, onClose }) {
               />
             ) : (
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy-600 text-sm font-semibold">
-                {(brand || 'AA').slice(0, 2).toUpperCase()}
+                {(brand || 'MB').slice(0, 2).toUpperCase()}
               </span>
             )}
             <div className="min-w-0">
-              <p className="text-[10px] uppercase tracking-wider text-navy-100">Admin</p>
+              <p className="text-[10px] uppercase tracking-wider text-navy-100">
+                Panel de control
+              </p>
               <h1 className="truncate text-base font-semibold leading-tight sm:text-lg">
                 {brand}
               </h1>
@@ -95,6 +103,18 @@ export default function Sidebar({ open, onClose }) {
               {label}
             </NavLink>
           ))}
+          {tiendaHref ? (
+            <a
+              href={tiendaHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={onClose}
+              className="mt-2 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-navy-100 ring-1 ring-white/15 transition hover:bg-white/10"
+            >
+              <ExternalLink className="h-4 w-4 shrink-0" />
+              Ver mi tienda
+            </a>
+          ) : null}
         </nav>
       </aside>
     </>

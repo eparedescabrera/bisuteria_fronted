@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { FaFacebook, FaInstagram, FaMapMarkerAlt, FaWhatsapp } from 'react-icons/fa';
 import Seo from '../../components/public/Seo';
 import { useCatalog } from '../../context/CatalogContext';
+import { useTiendaPath } from '../../hooks/useTiendaPath';
 import { buildWhatsAppUrl } from '../../utils/publicHelpers';
 
 export default function ContactPage() {
   const { config } = useCatalog();
+  const tp = useTiendaPath();
   const [form, setForm] = useState({ nombre: '', mensaje: '' });
   const brand = config?.nombre_negocio || 'Tienda';
 
@@ -21,8 +23,9 @@ export default function ContactPage() {
     <>
       <Seo
         title="Contacto"
+        siteName={brand}
         description={`Teléfono, WhatsApp, ubicación y redes de ${brand}.`}
-        path="/contacto"
+        path={tp('/contacto')}
       />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 lg:grid-cols-2">
         <div>

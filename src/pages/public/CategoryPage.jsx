@@ -14,8 +14,9 @@ import { useTiendaPath } from '../../hooks/useTiendaPath';
 
 export default function CategoryPage() {
   const { slug } = useParams();
-  const { tiendaSlug } = useCatalog();
+  const { config, tiendaSlug } = useCatalog();
   const tp = useTiendaPath();
+  const brand = config?.nombre_negocio || 'Tienda';
 
   const categoriesQuery = useQuery({
     queryKey: ['public', tiendaSlug, 'categorias'],
@@ -35,7 +36,11 @@ export default function CategoryPage() {
   if (categoriesQuery.isSuccess && !category) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 text-center">
-        <Seo title="Categoría no encontrada" path={tp(`/categoria/${slug}`)} />
+        <Seo
+          title="Categoría no encontrada"
+          siteName={brand}
+          path={tp(`/categoria/${slug}`)}
+        />
         <h1 className="font-[family-name:Georgia,serif] text-3xl">Categoría no encontrada</h1>
         <Link to={tp('/productos')} className="mt-6 inline-block underline">
           Ver catálogo
@@ -48,6 +53,7 @@ export default function CategoryPage() {
     <>
       <Seo
         title={category?.nombre || 'Categoría'}
+        siteName={brand}
         description={category?.descripcion || `Productos de ${slug}`}
         path={tp(`/categoria/${slug}`)}
         image={category?.imagen_url}
