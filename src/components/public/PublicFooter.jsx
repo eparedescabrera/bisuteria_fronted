@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FaFacebook, FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import { FaFacebook, FaInstagram, FaMapMarkerAlt, FaWhatsapp } from 'react-icons/fa';
 import { useCatalog } from '../../context/CatalogContext';
 import { useTiendaPath } from '../../hooks/useTiendaPath';
 import { buildWhatsAppUrl, cloudinaryUrl } from '../../utils/publicHelpers';
@@ -53,6 +53,19 @@ export default function PublicFooter() {
               </Link>
             </li>
             {config?.direccion ? <li>{config.direccion}</li> : null}
+            {config?.mapa_url ? (
+              <li>
+                <a
+                  href={config.mapa_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 hover:underline"
+                >
+                  <FaMapMarkerAlt aria-hidden className="shrink-0" />
+                  Ver en Google Maps
+                </a>
+              </li>
+            ) : null}
             {config?.telefono ? <li>Tel: {config.telefono}</li> : null}
           </ul>
         </div>

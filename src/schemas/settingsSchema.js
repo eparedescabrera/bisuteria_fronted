@@ -1,5 +1,22 @@
 import { z } from 'zod';
 
+function isGoogleMapsUrl(value) {
+  if (!value) return true;
+  try {
+    const u = new URL(value);
+    if (!['http:', 'https:'].includes(u.protocol)) return false;
+    const host = u.hostname.toLowerCase();
+    return (
+      host.includes('google.') ||
+      host === 'goo.gl' ||
+      host.endsWith('.goo.gl') ||
+      host === 'maps.app.goo.gl'
+    );
+  } catch {
+    return false;
+  }
+}
+
 export const settingsSchema = z.object({
   nombre_negocio: z.string().min(1, 'Obligatorio').max(160),
   descripcion: z.string().max(600).optional().or(z.literal('')),
@@ -12,6 +29,12 @@ export const settingsSchema = z.object({
     .or(z.literal('')),
   correo: z.string().max(150).optional().or(z.literal('')),
   direccion: z.string().max(350).optional().or(z.literal('')),
+  mapa_url: z
+    .string()
+    .max(600)
+    .optional()
+    .or(z.literal(''))
+    .refine(isGoogleMapsUrl, 'Debe ser un enlace de Google Maps'),
   facebook: z.string().max(300).optional().or(z.literal('')),
   instagram: z.string().max(300).optional().or(z.literal('')),
   moneda: z.string().length(3).default('CRC'),

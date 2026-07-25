@@ -49,6 +49,7 @@ export default function SettingsPage() {
         whatsapp: c.whatsapp || '',
         correo: c.correo || '',
         direccion: c.direccion || '',
+        mapa_url: c.mapa_url || '',
         facebook: c.facebook || '',
         instagram: c.instagram || '',
         moneda: c.moneda || 'CRC',
@@ -171,6 +172,21 @@ export default function SettingsPage() {
         <FormField label="Dirección / ubicación" name="direccion">
           <input id="direccion" className={inputClass} {...register('direccion')} />
         </FormField>
+        <div className="md:col-span-2">
+          <FormField
+            label="Enlace de Google Maps"
+            name="mapa_url"
+            hint="En Maps: Compartir → Copiar enlace. Cada tienda usa el suyo."
+            error={errors.mapa_url?.message}
+          >
+            <input
+              id="mapa_url"
+              className={inputClass}
+              placeholder="https://maps.app.goo.gl/..."
+              {...register('mapa_url')}
+            />
+          </FormField>
+        </div>
         <FormField label="Facebook" name="facebook">
           <input id="facebook" className={inputClass} {...register('facebook')} />
         </FormField>
