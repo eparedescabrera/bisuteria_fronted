@@ -9,17 +9,21 @@ import {
   getPublicProducts
 } from '../../services/publicApi';
 import { cloudinaryUrl } from '../../utils/publicHelpers';
+import { useCatalog } from '../../context/CatalogContext';
+import { useTiendaPath } from '../../hooks/useTiendaPath';
 
 export default function CategoryPage() {
   const { slug } = useParams();
+  const { tiendaSlug } = useCatalog();
+  const tp = useTiendaPath();
 
   const categoriesQuery = useQuery({
-    queryKey: ['public', 'categorias'],
+    queryKey: ['public', tiendaSlug, 'categorias'],
     queryFn: getPublicCategories
   });
 
   const productsQuery = useQuery({
-    queryKey: ['public', 'productos', { categoria: slug }],
+    queryKey: ['public', tiendaSlug, 'productos', { categoria: slug }],
     queryFn: () =>
       getPublicProducts({ categoria: slug, pagina: 1, limite: 24, orden: 'recientes' }),
     enabled: Boolean(slug)
@@ -31,9 +35,9 @@ export default function CategoryPage() {
   if (categoriesQuery.isSuccess && !category) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 text-center">
-        <Seo title="Categoría no encontrada" path={`/categoria/${slug}`} />
+        <Seo title="Categoría no encontrada" path={tp(`/categoria/${slug}`)} />
         <h1 className="font-[family-name:Georgia,serif] text-3xl">Categoría no encontrada</h1>
-        <Link to="/productos" className="mt-6 inline-block underline">
+        <Link to={tp('/productos')} className="mt-6 inline-block underline">
           Ver catálogo
         </Link>
       </div>
@@ -45,7 +49,7 @@ export default function CategoryPage() {
       <Seo
         title={category?.nombre || 'Categoría'}
         description={category?.descripcion || `Productos de ${slug}`}
-        path={`/categoria/${slug}`}
+        path={tp(`/categoria/${slug}`)}
         image={category?.imagen_url}
       />
 

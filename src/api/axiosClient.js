@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { getCsrfToken } from '../utils/csrf';
 import { getAccessToken, setAccessToken, clearAccessToken } from '../utils/authToken';
+import { getPublicTiendaSlug } from '../utils/tienda';
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -37,6 +38,16 @@ api.interceptors.request.use((config) => {
     delete config.headers['Content-Type'];
     // Subidas a Cloudinary pueden tardar más
     config.timeout = 120000;
+  }
+
+  // Catálogo multi-tienda: empresa siempre desde el slug activo (nunca id del cliente)
+  const url = String(config.url || '');
+  if (url.includes('/public/')) {
+    const slug = getPublicTiendaSlug();
+    if (slug) {
+      config.params = { ...(config.params || {}), empresa: slug };
+      config.headers['X-Empresa-Slug'] = slug;
+    }
   }
 
   return config;
@@ -81,8 +92,8 @@ api.interceptors.response.use(
       } catch {
         clearAccessToken();
         const path = window.location.pathname || '';
-        // Solo expulsar al login si estaba en el panel admin
-        if (path.startsWith('/admin')) {
+        // Expulsar al login si estaba en paneles autenticados
+        if (path.startsWith('/admin') || path.startsWith('/super-admin')) {
           window.location.href = '/login';
         }
       }

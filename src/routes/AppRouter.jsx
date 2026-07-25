@@ -1,13 +1,16 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useParams } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
-import ProtectedRoute from './ProtectedRoute';
+import ProtectedRoute, { SuperAdminRoute } from './ProtectedRoute';
 import AdminLayout from '../layouts/AdminLayout';
 import AuthLayout from '../layouts/AuthLayout';
 import PublicLayout from '../layouts/PublicLayout';
+import SuperAdminLayout from '../layouts/SuperAdminLayout';
 import LoginPage from '../pages/auth/LoginPage';
 import UnauthorizedPage from '../pages/errors/UnauthorizedPage';
 import NotFoundPage from '../pages/errors/NotFoundPage';
 import { useAuth } from '../hooks/useAuth';
+import { homePathForUser } from '../utils/permissions';
+import { DEFAULT_TIENDA_SLUG } from '../utils/tienda';
 
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'));
 const CategoriesPage = lazy(() => import('../pages/categories/CategoriesPage'));
@@ -27,11 +30,24 @@ const PublicProductDetailPage = lazy(
 const CategoryPage = lazy(() => import('../pages/public/CategoryPage'));
 const AboutPage = lazy(() => import('../pages/public/AboutPage'));
 const ContactPage = lazy(() => import('../pages/public/ContactPage'));
+const SubscribePage = lazy(() => import('../pages/public/SubscribePage'));
+
+const SuperDashboardPage = lazy(
+  () => import('../pages/super-admin/SuperDashboardPage')
+);
+const SuperEmpresasPage = lazy(
+  () => import('../pages/super-admin/SuperEmpresasPage')
+);
+const SuperEmpresaDetailPage = lazy(
+  () => import('../pages/super-admin/SuperEmpresaDetailPage')
+);
 
 function PublicOnly({ children }) {
-  const { isAuthenticated, booting } = useAuth();
+  const { isAuthenticated, booting, user } = useAuth();
   if (booting) return null;
-  if (isAuthenticated) return <Navigate to="/admin" replace />;
+  if (isAuthenticated) {
+    return <Navigate to={homePathForUser(user)} replace />;
+  }
   return children;
 }
 
@@ -43,12 +59,36 @@ function PageFallback() {
   );
 }
 
+const defaultStore = `/t/${DEFAULT_TIENDA_SLUG}`;
+
+function LegacyProductRedirect() {
+  const { slug } = useParams();
+  return <Navigate to={`${defaultStore}/producto/${slug}`} replace />;
+}
+
+function LegacyCategoryRedirect() {
+  const { slug } = useParams();
+  return <Navigate to={`${defaultStore}/categoria/${slug}`} replace />;
+}
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Suspense fallback={<PageFallback />}>
         <Routes>
-          <Route element={<PublicLayout />}>
+          {/* Plataforma (sin tienda) */}
+          <Route path="/" element={<Navigate to={defaultStore} replace />} />
+          <Route path="/suscribirse" element={<SubscribePage />} />
+
+          {/* Compatibilidad rutas antiguas → tienda principal */}
+          <Route path="/productos" element={<Navigate to={`${defaultStore}/productos`} replace />} />
+          <Route path="/producto/:slug" element={<LegacyProductRedirect />} />
+          <Route path="/categoria/:slug" element={<LegacyCategoryRedirect />} />
+          <Route path="/nosotros" element={<Navigate to={`${defaultStore}/nosotros`} replace />} />
+          <Route path="/contacto" element={<Navigate to={`${defaultStore}/contacto`} replace />} />
+
+          {/* Catálogo por tienda: /t/{slug} */}
+          <Route path="/t/:tiendaSlug" element={<PublicLayout />}>
             <Route index element={<HomePage />} />
             <Route path="productos" element={<PublicProductsPage />} />
             <Route path="producto/:slug" element={<PublicProductDetailPage />} />
@@ -78,6 +118,14 @@ export default function AppRouter() {
               <Route path="inventario" element={<InventoryPage />} />
               <Route path="reportes" element={<ReportsPage />} />
               <Route path="configuracion" element={<SettingsPage />} />
+            </Route>
+          </Route>
+
+          <Route element={<SuperAdminRoute />}>
+            <Route path="/super-admin" element={<SuperAdminLayout />}>
+              <Route index element={<SuperDashboardPage />} />
+              <Route path="empresas" element={<SuperEmpresasPage />} />
+              <Route path="empresas/:id" element={<SuperEmpresaDetailPage />} />
             </Route>
           </Route>
 

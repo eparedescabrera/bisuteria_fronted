@@ -18,6 +18,17 @@ import {
 
 export const AuthContext = createContext(null);
 
+function mapUser(raw) {
+  if (!raw) return null;
+  return {
+    id_usuario: raw.id_usuario,
+    nombre_completo: raw.nombre_completo,
+    nombre_usuario: raw.nombre_usuario,
+    rol: raw.rol,
+    id_empresa: raw.id_empresa == null ? null : Number(raw.id_empresa)
+  };
+}
+
 export function AuthProvider({ children }) {
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
@@ -37,7 +48,7 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (credentials) => {
     const response = await loginRequest(credentials);
-    const nextUser = response.data.usuario;
+    const nextUser = mapUser(response.data.usuario);
     const token = response.data.accessToken || response.data.token;
     if (token) setAccessToken(token);
     setUser(nextUser);
@@ -53,16 +64,10 @@ export function AuthProvider({ children }) {
     }
 
     async function boot() {
-      // Si hay token en sessionStorage, Bearer ya irá en axios
       try {
         const response = await getPerfilRequest();
         if (active) {
-          setUser({
-            id_usuario: response.data.id_usuario,
-            nombre_completo: response.data.nombre_completo,
-            nombre_usuario: response.data.nombre_usuario,
-            rol: response.data.rol
-          });
+          setUser(mapUser(response.data));
         }
       } catch {
         if (active) {

@@ -10,6 +10,7 @@ import Seo from '../../components/public/Seo';
 import ProductCard from '../../components/public/ProductCard';
 import ProductCardSkeleton from '../../components/public/ProductCardSkeleton';
 import { useCatalog } from '../../context/CatalogContext';
+import { useTiendaPath } from '../../hooks/useTiendaPath';
 import { getFeaturedProducts, getRecentProducts } from '../../services/publicApi';
 import { cloudinaryUrl } from '../../utils/publicHelpers';
 
@@ -38,16 +39,17 @@ const fadeUp = {
 };
 
 export default function HomePage() {
-  const { config } = useCatalog();
-  const brand = config?.nombre_negocio || 'Accesorios Anny';
+  const { config, tiendaSlug } = useCatalog();
+  const tp = useTiendaPath();
+  const brand = config?.nombre_negocio || 'Tienda';
 
   const featuredQuery = useQuery({
-    queryKey: ['public', 'destacados'],
+    queryKey: ['public', tiendaSlug, 'destacados'],
     queryFn: () => getFeaturedProducts(8)
   });
 
   const recentQuery = useQuery({
-    queryKey: ['public', 'recientes'],
+    queryKey: ['public', tiendaSlug, 'recientes'],
     queryFn: () => getRecentProducts(8)
   });
 
@@ -142,7 +144,7 @@ export default function HomePage() {
                       className="mt-6 sm:mt-8"
                     >
                       <Link
-                        to="/productos"
+                        to={tp('/productos')}
                         className="inline-flex rounded-full bg-[#f3e6d8] px-5 py-2.5 text-sm font-semibold text-[#3d2c29] transition hover:bg-white sm:px-6 sm:py-3"
                       >
                         Ver catálogo
@@ -162,7 +164,7 @@ export default function HomePage() {
             Destacados
           </h2>
           <Link
-            to="/productos"
+            to={tp('/productos')}
             className="text-sm text-[#3d2c29] underline-offset-4 hover:underline"
           >
             Ver todo

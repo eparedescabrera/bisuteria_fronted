@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaWhatsapp } from 'react-icons/fa';
 import { useCatalog } from '../../context/CatalogContext';
+import { useTiendaPath } from '../../hooks/useTiendaPath';
 import {
   buildWhatsAppUrl,
   cloudinaryUrl,
@@ -13,6 +14,8 @@ import {
 
 export default function ProductCard({ product }) {
   const { config } = useCatalog();
+  const tp = useTiendaPath();
+  const detailPath = tp(`/producto/${product.slug}`);
   const offer = isOffer(product);
   const isNew = isNewProduct(product);
   const wa = buildWhatsAppUrl(config?.whatsapp, productWhatsAppMessage(product));
@@ -27,7 +30,7 @@ export default function ProductCard({ product }) {
       transition={{ duration: 0.35 }}
       className="group overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-stone-200 transition duration-300 hover:-translate-y-1.5 hover:shadow-lg hover:ring-[#3d2c29]/15"
     >
-      <Link to={`/producto/${product.slug}`} className="block">
+      <Link to={detailPath} className="block">
         <div className="relative aspect-[4/5] overflow-hidden bg-stone-100">
           {product.imagen_principal ? (
             <img
@@ -60,7 +63,7 @@ export default function ProductCard({ product }) {
         <p className="text-xs uppercase tracking-wide text-stone-500">
           {product.categoria || product.categoria_slug}
         </p>
-        <Link to={`/producto/${product.slug}`}>
+        <Link to={detailPath}>
           <h3 className="font-[family-name:Georgia,serif] text-lg leading-snug text-[#3d2c29]">
             {product.nombre}
           </h3>
@@ -83,7 +86,7 @@ export default function ProductCard({ product }) {
         </p>
         <div className="flex gap-2 pt-1">
           <Link
-            to={`/producto/${product.slug}`}
+            to={detailPath}
             className="flex-1 rounded-full bg-[#3d2c29] px-3 py-2 text-center text-sm text-[#f3e6d8] transition hover:bg-[#2a1e1c]"
           >
             Ver detalle

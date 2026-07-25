@@ -7,6 +7,7 @@ import Seo from '../../components/public/Seo';
 import ProductCard from '../../components/public/ProductCard';
 import ProductCardSkeleton from '../../components/public/ProductCardSkeleton';
 import { useCatalog } from '../../context/CatalogContext';
+import { useTiendaPath } from '../../hooks/useTiendaPath';
 import {
   getPublicProductBySlug,
   getRelatedProducts
@@ -21,18 +22,19 @@ import {
 
 export default function PublicProductDetailPage() {
   const { slug } = useParams();
-  const { config } = useCatalog();
+  const { config, tiendaSlug } = useCatalog();
+  const tp = useTiendaPath();
   const [active, setActive] = useState(0);
   const [zoomed, setZoomed] = useState(false);
 
   const productQuery = useQuery({
-    queryKey: ['public', 'producto', slug],
+    queryKey: ['public', tiendaSlug, 'producto', slug],
     queryFn: () => getPublicProductBySlug(slug),
     enabled: Boolean(slug)
   });
 
   const relatedQuery = useQuery({
-    queryKey: ['public', 'relacionados', slug],
+    queryKey: ['public', tiendaSlug, 'relacionados', slug],
     queryFn: () => getRelatedProducts(slug, 4),
     enabled: Boolean(slug) && productQuery.isSuccess
   });
@@ -54,11 +56,14 @@ export default function PublicProductDetailPage() {
     const status = productQuery.error?.response?.status;
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 text-center">
-        <Seo title={status === 404 ? 'Producto no encontrado' : 'Error'} path={`/producto/${slug}`} />
+        <Seo
+          title={status === 404 ? 'Producto no encontrado' : 'Error'}
+          path={tp(`/producto/${slug}`)}
+        />
         <h1 className="font-[family-name:Georgia,serif] text-3xl">
           {status === 404 ? 'Producto no encontrado' : 'No se pudo cargar'}
         </h1>
-        <Link to="/productos" className="mt-6 inline-block underline">
+        <Link to={tp('/productos')} className="mt-6 inline-block underline">
           Volver al catálogo
         </Link>
       </div>
@@ -80,7 +85,7 @@ export default function PublicProductDetailPage() {
       <Seo
         title={p.nombre}
         description={p.descripcion_corta || p.descripcion_completa || p.nombre}
-        path={`/producto/${p.slug}`}
+        path={tp(`/producto/${p.slug}`)}
         image={current?.imagen_url}
         type="product"
         keywords={`${p.nombre}, ${p.categoria?.nombre || ''}, bisutería`}
@@ -88,13 +93,15 @@ export default function PublicProductDetailPage() {
 
       <div className="mx-auto max-w-6xl px-4 py-10">
         <nav className="mb-6 text-sm text-stone-500" aria-label="Breadcrumb">
-          <Link to="/">Inicio</Link>
+          <Link to={tp('/')}>Inicio</Link>
           <span className="mx-2">/</span>
-          <Link to="/productos">Productos</Link>
+          <Link to={tp('/productos')}>Productos</Link>
           {p.categoria?.slug ? (
             <>
               <span className="mx-2">/</span>
-              <Link to={`/categoria/${p.categoria.slug}`}>{p.categoria.nombre}</Link>
+              <Link to={tp(`/categoria/${p.categoria.slug}`)}>
+                {p.categoria.nombre}
+              </Link>
             </>
           ) : null}
         </nav>

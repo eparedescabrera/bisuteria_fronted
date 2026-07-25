@@ -9,6 +9,8 @@ import {
   getPublicProducts
 } from '../../services/publicApi';
 import { useDebounce } from '../../hooks/useDebounce';
+import { useCatalog } from '../../context/CatalogContext';
+import { useTiendaPath } from '../../hooks/useTiendaPath';
 
 /**
  * Orden Doc 3: recientes, precio_asc, precio_desc, nombre_asc...
@@ -22,6 +24,8 @@ const ORDENES = [
 ];
 
 export default function PublicProductsPage() {
+  const { tiendaSlug } = useCatalog();
+  const tp = useTiendaPath();
   const [searchParams, setSearchParams] = useSearchParams();
   const [busqueda, setBusqueda] = useState(searchParams.get('busqueda') || '');
   const debounced = useDebounce(busqueda);
@@ -44,12 +48,12 @@ export default function PublicProductsPage() {
   );
 
   const categoriesQuery = useQuery({
-    queryKey: ['public', 'categorias'],
+    queryKey: ['public', tiendaSlug, 'categorias'],
     queryFn: getPublicCategories
   });
 
   const productsQuery = useQuery({
-    queryKey: ['public', 'productos', filters],
+    queryKey: ['public', tiendaSlug, 'productos', filters],
     queryFn: () => getPublicProducts(filters),
     placeholderData: (prev) => prev
   });
@@ -168,7 +172,7 @@ export default function PublicProductsPage() {
           </label>
           <div className="flex items-end">
             <Link
-              to="/productos"
+              to={tp('/productos')}
               className="w-full rounded-xl border border-stone-300 px-3 py-2 text-center text-sm hover:bg-stone-50"
             >
               Limpiar

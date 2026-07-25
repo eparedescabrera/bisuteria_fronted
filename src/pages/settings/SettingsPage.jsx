@@ -119,6 +119,23 @@ export default function SettingsPage() {
         description="Datos públicos, WhatsApp y apariencia del catálogo"
       />
 
+      {config.tienda_slug ? (
+        <div className="mb-4 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950">
+          <p className="font-medium">Enlace público de tu tienda</p>
+          <a
+            href={`${window.location.origin}/t/${config.tienda_slug}`}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-1 inline-block break-all underline"
+          >
+            {`${window.location.origin}/t/${config.tienda_slug}`}
+          </a>
+          <p className="mt-1 text-xs text-sky-800">
+            Compártelo con tus clientes. Solo funciona si la cuenta está Activa.
+          </p>
+        </div>
+      ) : null}
+
       <form
         onSubmit={handleSubmit((formValues) => saveMutation.mutate(formValues))}
         className="grid gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-2"
@@ -215,10 +232,13 @@ export default function SettingsPage() {
             <input
               id="logo"
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/jpeg,image/png,image/webp,image/gif,.jpg,.jpeg,.png,.webp"
               className={inputClass}
               onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
             />
+            <p className="mt-1 text-xs text-slate-500">
+              Use JPG o PNG. Si viene del iPhone, evite HEIC.
+            </p>
           </FormField>
           <Button
             className="mt-3"

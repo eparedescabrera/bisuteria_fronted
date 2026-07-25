@@ -1,13 +1,21 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { loginSchema } from '../../schemas/authSchema';
 import { useAuth } from '../../hooks/useAuth';
 import FormField, { inputClass } from '../../components/forms/FormField';
 import Button from '../../components/common/Button';
+import { homePathForUser } from '../../utils/permissions';
 
 const LOGIN_FAIL_MSG = 'Credenciales incorrectas';
+
+const EMPRESA_MESSAGES = {
+  EMPRESA_PENDIENTE: 'Tu pago está siendo validado.',
+  EMPRESA_SUSPENDIDA: 'Tu cuenta se encuentra suspendida.',
+  EMPRESA_VENCIDA:
+    'Tu suscripción venció. Realiza nuevamente el pago por SINPE al 8554-8880.'
+};
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -28,19 +36,28 @@ export default function LoginPage() {
   const onSubmit = async (values) => {
     setApiError('');
     try {
-      await login(values);
-      // Limpiar contraseña de la memoria del formulario tras éxito
+      const user = await login(values);
       resetField('password');
-      const redirectTo = location.state?.from?.pathname || '/admin';
-      // Solo redirigir a rutas admin internas
+      const home = homePathForUser(user);
+      const redirectTo = location.state?.from?.pathname;
       const safeTarget =
-        typeof redirectTo === 'string' && redirectTo.startsWith('/admin')
+        typeof redirectTo === 'string' &&
+        ((user?.rol === 'SuperAdministrador' &&
+          redirectTo.startsWith('/super-admin')) ||
+          (user?.rol === 'Administrador' && redirectTo.startsWith('/admin')))
           ? redirectTo
-          : '/admin';
+          : home;
       navigate(safeTarget, { replace: true });
-    } catch {
-      // Mensaje genérico: no filtrar si el usuario existe ni detalles del servidor
-      setApiError(LOGIN_FAIL_MSG);
+    } catch (error) {
+      const code = error?.response?.data?.errorCode;
+      const message = error?.response?.data?.message;
+      if (code && EMPRESA_MESSAGES[code]) {
+        setApiError(EMPRESA_MESSAGES[code]);
+      } else if (code && code !== 'UNAUTHORIZED' && message) {
+        setApiError(message);
+      } else {
+        setApiError(LOGIN_FAIL_MSG);
+      }
       resetField('password');
     }
   };
@@ -74,7 +91,7 @@ export default function LoginPage() {
       </FormField>
 
       {apiError ? (
-        <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+        <div className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900" role="alert">
           {apiError}
         </div>
       ) : null}
@@ -82,6 +99,13 @@ export default function LoginPage() {
       <Button type="submit" className="w-full" loading={isSubmitting}>
         Iniciar sesión
       </Button>
+
+      <p className="text-center text-sm text-slate-500">
+        ¿Nuevo negocio?{' '}
+        <Link to="/suscribirse" className="font-medium text-navy-700 underline-offset-2 hover:underline">
+          Solicitar suscripción
+        </Link>
+      </p>
     </form>
   );
 }

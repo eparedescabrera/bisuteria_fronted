@@ -3,21 +3,23 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { FiMenu, FiSearch, FiX } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
 import { useCatalog } from '../../context/CatalogContext';
+import { useTiendaPath } from '../../hooks/useTiendaPath';
 import { buildWhatsAppUrl, cloudinaryUrl } from '../../utils/publicHelpers';
-
-const links = [
-  { to: '/', label: 'Inicio', end: true },
-  { to: '/productos', label: 'Productos' },
-  { to: '/productos', label: 'Categorías', hash: true },
-  { to: '/nosotros', label: 'Nosotros' },
-  { to: '/contacto', label: 'Contacto' }
-];
 
 export default function PublicNavbar() {
   const { config } = useCatalog();
+  const tp = useTiendaPath();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState('');
+
+  const links = [
+    { to: tp('/'), label: 'Inicio', end: true },
+    { to: tp('/productos'), label: 'Productos' },
+    { to: tp('/productos'), label: 'Categorías', hash: true },
+    { to: tp('/nosotros'), label: 'Nosotros' },
+    { to: tp('/contacto'), label: 'Contacto' }
+  ];
 
   const wa = buildWhatsAppUrl(
     config?.whatsapp,
@@ -27,14 +29,22 @@ export default function PublicNavbar() {
   const onSearch = (e) => {
     e.preventDefault();
     const term = q.trim();
-    navigate(term ? `/productos?busqueda=${encodeURIComponent(term)}` : '/productos');
+    navigate(
+      term
+        ? `${tp('/productos')}?busqueda=${encodeURIComponent(term)}`
+        : tp('/productos')
+    );
     setOpen(false);
   };
 
   return (
     <header className="sticky top-0 z-40 border-b border-stone-200/80 bg-[#faf7f2]/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center gap-2 px-3 py-3 sm:gap-4 sm:px-4">
-        <Link to="/" className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3" aria-label="Inicio">
+        <Link
+          to={tp('/')}
+          className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3"
+          aria-label="Inicio"
+        >
           {config?.logo_url ? (
             <img
               src={cloudinaryUrl(config.logo_url, { width: 96 })}
@@ -43,11 +53,11 @@ export default function PublicNavbar() {
             />
           ) : (
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#3d2c29] text-sm font-semibold text-[#f3e6d8] sm:h-10 sm:w-10">
-              AA
+              {(config?.nombre_negocio || 'TI').slice(0, 2).toUpperCase()}
             </span>
           )}
           <span className="truncate font-[family-name:Georgia,serif] text-base text-[#3d2c29] sm:text-lg">
-            {config?.nombre_negocio || 'Accesorios Anny'}
+            {config?.nombre_negocio || 'Tienda'}
           </span>
         </Link>
 

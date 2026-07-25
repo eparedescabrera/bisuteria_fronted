@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
 import { FaFacebook, FaInstagram, FaWhatsapp } from 'react-icons/fa';
 import { useCatalog } from '../../context/CatalogContext';
+import { useTiendaPath } from '../../hooks/useTiendaPath';
 import { buildWhatsAppUrl, cloudinaryUrl } from '../../utils/publicHelpers';
 
 export default function PublicFooter() {
   const { config } = useCatalog();
+  const tp = useTiendaPath();
   const wa = buildWhatsAppUrl(config?.whatsapp, 'Hola, deseo más información.');
 
   return (
@@ -21,7 +23,7 @@ export default function PublicFooter() {
             ) : null}
             <div>
               <p className="font-[family-name:Georgia,serif] text-xl">
-                {config?.nombre_negocio || 'Accesorios Anny'}
+                {config?.nombre_negocio || 'Tienda'}
               </p>
               <p className="mt-1 text-sm text-[#e8d5c4]/80">
                 {config?.descripcion || 'Bisutería hecha con dedicación'}
@@ -36,17 +38,17 @@ export default function PublicFooter() {
           </p>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
-              <Link to="/productos" className="hover:underline">
+              <Link to={tp('/productos')} className="hover:underline">
                 Catálogo
               </Link>
             </li>
             <li>
-              <Link to="/nosotros" className="hover:underline">
+              <Link to={tp('/nosotros')} className="hover:underline">
                 Nosotros
               </Link>
             </li>
             <li>
-              <Link to="/contacto" className="hover:underline">
+              <Link to={tp('/contacto')} className="hover:underline">
                 Contacto
               </Link>
             </li>
@@ -92,7 +94,7 @@ export default function PublicFooter() {
         </div>
       </div>
       <div className="border-t border-white/10 px-4 py-4 text-center text-xs text-[#e8d5c4]/70">
-        © {new Date().getFullYear()} {config?.nombre_negocio || 'Accesorios Anny'}. Todos los
+        © {new Date().getFullYear()} {config?.nombre_negocio || 'Tienda'}. Todos los
         derechos reservados.
       </div>
     </footer>
