@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getCsrfToken } from '../utils/csrf';
+import { getCsrfToken, setCsrfToken, clearCsrfToken } from '../utils/csrf';
 import { getAccessToken, setAccessToken, clearAccessToken } from '../utils/authToken';
 import { getPublicTiendaSlug } from '../utils/tienda';
 
@@ -80,7 +80,9 @@ api.interceptors.response.use(
             .post('/auth/refresh')
             .then((res) => {
               const next = res.data?.data?.accessToken || res.data?.data?.token;
+              const csrf = res.data?.data?.csrfToken;
               if (next) setAccessToken(next);
+              if (csrf) setCsrfToken(csrf);
               return res;
             })
             .finally(() => {
@@ -91,6 +93,7 @@ api.interceptors.response.use(
         return api(original);
       } catch {
         clearAccessToken();
+        clearCsrfToken();
         const path = window.location.pathname || '';
         // Expulsar al login si estaba en paneles autenticados
         if (path.startsWith('/admin') || path.startsWith('/super-admin')) {
@@ -113,7 +116,9 @@ api.interceptors.response.use(
             .post('/auth/refresh')
             .then((res) => {
               const next = res.data?.data?.accessToken || res.data?.data?.token;
+              const csrf = res.data?.data?.csrfToken;
               if (next) setAccessToken(next);
+              if (csrf) setCsrfToken(csrf);
               return res;
             })
             .finally(() => {
@@ -124,6 +129,7 @@ api.interceptors.response.use(
         return api(original);
       } catch {
         clearAccessToken();
+        clearCsrfToken();
       }
     }
 

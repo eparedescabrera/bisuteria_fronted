@@ -15,6 +15,7 @@ import {
   setAccessToken,
   clearAccessToken
 } from '../utils/authToken';
+import { setCsrfToken, clearCsrfToken } from '../utils/csrf';
 
 export const AuthContext = createContext(null);
 
@@ -41,6 +42,7 @@ export function AuthProvider({ children }) {
       // sesión ya inválida
     } finally {
       clearAccessToken();
+      clearCsrfToken();
       setUser(null);
       queryClient.clear();
     }
@@ -54,6 +56,7 @@ export function AuthProvider({ children }) {
       const nextUser = mapUser(response.data.usuario);
       const token = response.data.accessToken || response.data.token;
       if (token) setAccessToken(token);
+      if (response.data.csrfToken) setCsrfToken(response.data.csrfToken);
       setUser(nextUser);
       return nextUser;
     },
@@ -77,6 +80,7 @@ export function AuthProvider({ children }) {
       } catch {
         if (active) {
           clearAccessToken();
+          clearCsrfToken();
           setUser(null);
           queryClient.clear();
         }
