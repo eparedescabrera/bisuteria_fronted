@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -12,24 +13,9 @@ import ProductCardSkeleton from '../../components/public/ProductCardSkeleton';
 import { useCatalog } from '../../context/CatalogContext';
 import { useTiendaPath } from '../../hooks/useTiendaPath';
 import { getFeaturedProducts, getRecentProducts } from '../../services/publicApi';
-import { cloudinaryUrl } from '../../utils/publicHelpers';
+import { cloudinaryUrl, formatPublicPrice } from '../../utils/publicHelpers';
 
-const LOCAL_SLIDES = [
-  {
-    title: 'Hecho a mano',
-    text: 'Tejidos y detalles artesanales para tu día a día.',
-    image: '/images/slide-cactus.png',
-    local: true,
-    position: 'object-center'
-  },
-  {
-    title: 'Personalízalo',
-    text: 'Iniciales, colores y diseños pensados para ti.',
-    image: '/images/slide-iniciales.png',
-    local: true,
-    position: 'object-[center_40%]'
-  }
-];
+const MAX_PRODUCT_SLIDES = 4;
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -37,6 +23,24 @@ const fadeUp = {
   viewport: { once: true, margin: '-60px' },
   transition: { duration: 0.45 }
 };
+
+function productSlidesFrom(list, tp) {
+  return (list || [])
+    .filter((p) => p?.imagen_principal && p?.slug)
+    .slice(0, MAX_PRODUCT_SLIDES)
+    .map((p) => ({
+      key: `producto-${p.id_producto}`,
+      title: p.nombre,
+      text:
+        p.descripcion_corta ||
+        (p.precio_venta != null
+          ? formatPublicPrice(p.precio_venta)
+          : 'Consulta disponibilidad por WhatsApp.'),
+      image: p.imagen_principal,
+      href: tp(`/producto/${p.slug}`),
+      cta: 'Ver pieza'
+    }));
+}
 
 export default function HomePage() {
   const { config, tiendaSlug } = useCatalog();
@@ -53,21 +57,61 @@ export default function HomePage() {
     queryFn: () => getRecentProducts(8)
   });
 
-  const slides = [
-    {
-      title: brand,
-      text:
-        config?.mensaje_bienvenida ||
-        'Bisutería artesanal para destacar tu estilo cada día.',
-      image: config?.portada_url || LOCAL_SLIDES[0].image,
-      local: !config?.portada_url,
-      position: 'object-center'
-    },
-    ...LOCAL_SLIDES
-  ];
-
   const featured = featuredQuery.data?.data || [];
   const recent = recentQuery.data?.data || [];
+
+  const slides = useMemo(() => {
+    const next = [];
+
+    if (config?.portada_url) {
+      next.push({
+        key: 'portada',
+        title: brand,
+        text:
+          config?.mensaje_bienvenida ||
+          'Explora el catálogo y consulta por WhatsApp.',
+        image: config.portada_url,
+        href: tp('/productos'),
+        cta: 'Ver catálogo'
+      });
+    }
+
+    const fromFeatured = productSlidesFrom(featured, tp);
+    const fromRecent = productSlidesFrom(recent, tp);
+
+    // Evitar duplicar la misma imagen si un destacado también es reciente
+    const seen = new Set(fromFeatured.map((s) => s.image));
+    const extras = fromRecent.filter((s) => !seen.has(s.image));
+
+    next.push(...fromFeatured);
+    if (next.length < 2) {
+      next.push(...extras.slice(0, MAX_PRODUCT_SLIDES - fromFeatured.length));
+    }
+
+    // Tienda sin portada ni fotos: hero de marca (sin imágenes globales del sistema)
+    if (!next.length) {
+      next.push({
+        key: 'marca',
+        title: brand,
+        text:
+          config?.mensaje_bienvenida ||
+          'Pronto verás las piezas de esta tienda aquí.',
+        image: null,
+        href: tp('/productos'),
+        cta: 'Ver catálogo'
+      });
+    }
+
+    return next;
+  }, [brand, config, featured, recent, tp]);
+
+  const seoImage =
+    config?.portada_url ||
+    featured.find((p) => p.imagen_principal)?.imagen_principal ||
+    recent.find((p) => p.imagen_principal)?.imagen_principal ||
+    undefined;
+
+  const canLoop = slides.length > 1;
 
   return (
     <>
@@ -75,42 +119,50 @@ export default function HomePage() {
         title="Inicio"
         description={
           config?.descripcion ||
-          'Catálogo de bisutería Accesorios Anny. Consulta por WhatsApp.'
+          `${brand}. Catálogo público y consulta por WhatsApp.`
         }
         keywords="bisutería, accesorios, pulseras, collares, aretes, Costa Rica"
         path="/"
-        image={
-          config?.portada_url ||
-          `${typeof window !== 'undefined' ? window.location.origin : ''}/images/slide-cactus.png`
-        }
+        image={seoImage}
       />
 
       <section className="relative overflow-hidden">
         <Swiper
+          key={`${tiendaSlug}-${slides.length}`}
           modules={[Autoplay, Pagination, EffectFade]}
           effect="fade"
           fadeEffect={{ crossFade: true }}
-          autoplay={{ delay: 4800, disableOnInteraction: false }}
-          pagination={{ clickable: true }}
-          loop
+          autoplay={
+            canLoop
+              ? { delay: 4800, disableOnInteraction: false }
+              : false
+          }
+          pagination={canLoop ? { clickable: true } : false}
+          loop={canLoop}
           className="public-hero-swiper h-[min(78svh,680px)] min-h-[360px] w-full sm:min-h-[420px] md:h-[min(72vh,760px)]"
         >
           {slides.map((slide, index) => {
-            const src = slide.local
-              ? slide.image
-              : cloudinaryUrl(slide.image, { width: 1800 });
+            const src = slide.image
+              ? cloudinaryUrl(slide.image, { width: 1800 })
+              : null;
             return (
-              <SwiperSlide key={`${slide.title}-${index}`}>
+              <SwiperSlide key={slide.key}>
                 <div className="relative flex h-full items-end bg-[#3d2c29]">
-                  <img
-                    src={src}
-                    alt=""
-                    decoding="async"
-                    fetchPriority={index === 0 ? 'high' : 'auto'}
-                    sizes="100vw"
-                    className={`absolute inset-0 h-full w-full object-cover ${slide.position || 'object-center'} scale-105 sm:scale-100`}
-                  />
-                  {/* Overlay suave: más claro en móvil para ver la pieza */}
+                  {src ? (
+                    <img
+                      src={src}
+                      alt=""
+                      decoding="async"
+                      fetchPriority={index === 0 ? 'high' : 'auto'}
+                      sizes="100vw"
+                      className="absolute inset-0 h-full w-full scale-105 object-cover object-center sm:scale-100"
+                    />
+                  ) : (
+                    <div
+                      className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#6b4f4a_0%,_#3d2c29_55%,_#1f1614_100%)]"
+                      aria-hidden
+                    />
+                  )}
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(61,44,41,0.15)_0%,rgba(61,44,41,0.2)_40%,rgba(61,44,41,0.72)_78%,rgba(31,22,20,0.92)_100%)] sm:bg-[linear-gradient(180deg,rgba(61,44,41,0.2)_0%,rgba(61,44,41,0.25)_45%,rgba(61,44,41,0.78)_80%,rgba(31,22,20,0.94)_100%)]" />
 
                   <div className="relative z-10 mx-auto w-full max-w-6xl px-3 pb-14 pt-20 text-[#faf7f2] sm:px-4 sm:pb-16 sm:pt-24">
@@ -119,7 +171,7 @@ export default function HomePage() {
                       animate={{ opacity: 1, y: 0 }}
                       className="text-[11px] uppercase tracking-[0.22em] text-[#e8d5c4] sm:text-xs sm:tracking-[0.25em]"
                     >
-                      Catálogo público
+                      {brand}
                     </motion.p>
                     <motion.h1
                       initial={{ opacity: 0, y: 18 }}
@@ -144,10 +196,10 @@ export default function HomePage() {
                       className="mt-6 sm:mt-8"
                     >
                       <Link
-                        to={tp('/productos')}
+                        to={slide.href}
                         className="inline-flex rounded-full bg-[#f3e6d8] px-5 py-2.5 text-sm font-semibold text-[#3d2c29] transition hover:bg-white sm:px-6 sm:py-3"
                       >
-                        Ver catálogo
+                        {slide.cta}
                       </Link>
                     </motion.div>
                   </div>
