@@ -6,6 +6,8 @@ import { setPublicTiendaSlug } from '../utils/tienda';
 const CatalogContext = createContext(null);
 
 export function CatalogProvider({ tiendaSlug, children }) {
+  // Sincrónico: el interceptor axios necesita el slug desde el primer request
+  setPublicTiendaSlug(tiendaSlug);
   useEffect(() => {
     setPublicTiendaSlug(tiendaSlug);
     return () => setPublicTiendaSlug(null);
@@ -13,7 +15,7 @@ export function CatalogProvider({ tiendaSlug, children }) {
 
   const query = useQuery({
     queryKey: ['public', tiendaSlug, 'configuracion'],
-    queryFn: getPublicConfig,
+    queryFn: () => getPublicConfig(tiendaSlug),
     staleTime: 5 * 60 * 1000,
     enabled: Boolean(tiendaSlug),
     retry: (count, error) => {

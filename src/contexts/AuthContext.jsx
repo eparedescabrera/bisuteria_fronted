@@ -46,14 +46,19 @@ export function AuthProvider({ children }) {
     }
   }, [queryClient]);
 
-  const login = useCallback(async (credentials) => {
-    const response = await loginRequest(credentials);
-    const nextUser = mapUser(response.data.usuario);
-    const token = response.data.accessToken || response.data.token;
-    if (token) setAccessToken(token);
-    setUser(nextUser);
-    return nextUser;
-  }, []);
+  const login = useCallback(
+    async (credentials) => {
+      // Evita que un admin vea datos cacheados de otra empresa al cambiar de sesión
+      queryClient.clear();
+      const response = await loginRequest(credentials);
+      const nextUser = mapUser(response.data.usuario);
+      const token = response.data.accessToken || response.data.token;
+      if (token) setAccessToken(token);
+      setUser(nextUser);
+      return nextUser;
+    },
+    [queryClient]
+  );
 
   useEffect(() => {
     let active = true;
@@ -73,6 +78,7 @@ export function AuthProvider({ children }) {
         if (active) {
           clearAccessToken();
           setUser(null);
+          queryClient.clear();
         }
       } finally {
         if (active) setBooting(false);
@@ -83,7 +89,7 @@ export function AuthProvider({ children }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [queryClient]);
 
   const value = useMemo(
     () => ({

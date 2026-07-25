@@ -5,8 +5,10 @@
  */
 import api from '../api/axiosClient';
 
-export async function getPublicConfig() {
-  const { data } = await api.get('/public/configuracion');
+export async function getPublicConfig(empresaSlug) {
+  const { data } = await api.get('/public/configuracion', {
+    params: empresaSlug ? { empresa: empresaSlug } : undefined
+  });
   return data;
 }
 

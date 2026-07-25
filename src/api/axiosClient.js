@@ -40,13 +40,13 @@ api.interceptors.request.use((config) => {
     config.timeout = 120000;
   }
 
-  // Catálogo multi-tienda: empresa siempre desde el slug activo (nunca id del cliente)
+  // Catálogo multi-tienda: empresa siempre desde el slug activo (nunca id del cliente).
+  // Solo query param (no header custom) para evitar preflight CORS bloqueado.
   const url = String(config.url || '');
   if (url.includes('/public/')) {
     const slug = getPublicTiendaSlug();
-    if (slug) {
+    if (slug && !config.params?.empresa) {
       config.params = { ...(config.params || {}), empresa: slug };
-      config.headers['X-Empresa-Slug'] = slug;
     }
   }
 
