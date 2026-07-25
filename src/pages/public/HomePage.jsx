@@ -118,6 +118,7 @@ export default function HomePage() {
       <Seo
         title="Inicio"
         siteName={brand}
+        logoUrl={config?.logo_url}
         description={
           config?.descripcion ||
           `${brand}. Catálogo público y consulta por WhatsApp.`

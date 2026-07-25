@@ -1,7 +1,7 @@
 export const APP_NAME = import.meta.env.VITE_APP_NAME || 'Inventory Pro';
 /** Logo del propietario de la plataforma (login + Super Admin) */
 export const PLATFORM_LOGO_URL = '/images/logo-plataforma.png';
-export const PLATFORM_BRAND = 'Gama';
+export const PLATFORM_BRAND = 'JP';
 export const WHATSAPP_COUNTRY_CODE =
   import.meta.env.VITE_WHATSAPP_COUNTRY_CODE || '506';
 

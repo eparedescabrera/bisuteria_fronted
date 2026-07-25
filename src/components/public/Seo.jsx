@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { cloudinaryUrl } from '../../utils/publicHelpers';
 
 export default function Seo({
   title,
@@ -6,6 +7,7 @@ export default function Seo({
   keywords,
   path = '/',
   image,
+  logoUrl,
   type = 'website',
   /** Nombre de la tienda actual (cada empresa es independiente) */
   siteName
@@ -17,7 +19,13 @@ export default function Seo({
     description ||
     `${site}. Consulta disponibilidad por WhatsApp.`;
   const canonical = `${base.replace(/\/$/, '')}${path.startsWith('/') ? path : `/${path}`}`;
-  const ogImage = image || undefined;
+
+  const logo = logoUrl
+    ? cloudinaryUrl(logoUrl, { width: 512, quality: 'auto' })
+    : undefined;
+  const ogImage = image
+    ? cloudinaryUrl(image, { width: 1200, quality: 'auto' })
+    : logo;
 
   return (
     <Helmet>
@@ -25,12 +33,15 @@ export default function Seo({
       <meta name="description" content={desc} />
       {keywords ? <meta name="keywords" content={keywords} /> : null}
       <link rel="canonical" href={canonical} />
+      {logo ? <link rel="icon" type="image/png" href={logo} /> : null}
+      {logo ? <link rel="apple-touch-icon" href={logo} /> : null}
       <meta property="og:type" content={type} />
+      <meta property="og:site_name" content={site} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={desc} />
       <meta property="og:url" content={canonical} />
       {ogImage ? <meta property="og:image" content={ogImage} /> : null}
-      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={desc} />
       {ogImage ? <meta name="twitter:image" content={ogImage} /> : null}

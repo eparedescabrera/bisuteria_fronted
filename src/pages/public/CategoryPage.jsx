@@ -54,6 +54,7 @@ export default function CategoryPage() {
       <Seo
         title={category?.nombre || 'Categoría'}
         siteName={brand}
+        logoUrl={config?.logo_url}
         description={category?.descripcion || `Productos de ${slug}`}
         path={tp(`/categoria/${slug}`)}
         image={category?.imagen_url}

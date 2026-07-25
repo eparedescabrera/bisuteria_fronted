@@ -3,6 +3,7 @@ import { CatalogProvider, useCatalog } from '../context/CatalogContext';
 import PublicNavbar from '../components/public/PublicNavbar';
 import PublicFooter from '../components/public/PublicFooter';
 import WhatsAppFab from '../components/public/WhatsAppFab';
+import StoreBrandHead from '../components/public/StoreBrandHead';
 import Spinner from '../components/feedback/Spinner';
 import { isValidTiendaSlug } from '../utils/tienda';
 
@@ -38,6 +39,7 @@ function TiendaShell() {
 
   return (
     <div className="min-h-svh overflow-x-hidden bg-[#faf7f2] text-[#3d2c29]">
+      <StoreBrandHead />
       <PublicNavbar />
       <main id="contenido-principal">
         <Outlet />

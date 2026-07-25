@@ -86,9 +86,10 @@ export default function PublicProductDetailPage() {
       <Seo
         title={p.nombre}
         siteName={config?.nombre_negocio}
+        logoUrl={config?.logo_url}
         description={p.descripcion_corta || p.descripcion_completa || p.nombre}
         path={tp(`/producto/${p.slug}`)}
-        image={current?.imagen_url}
+        image={current?.imagen_url || config?.logo_url}
         type="product"
         keywords={`${p.nombre}, ${p.categoria?.nombre || ''}, bisutería`}
       />

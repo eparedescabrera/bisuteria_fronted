@@ -75,6 +75,7 @@ export default function PublicProductsPage() {
       <Seo
         title="Productos"
         siteName={config?.nombre_negocio}
+        logoUrl={config?.logo_url}
         description={`Explora el catálogo de ${config?.nombre_negocio || 'la tienda'}. Filtra por categoría, precio y disponibilidad.`}
         path={tp('/productos')}
         keywords="catálogo, bisutería, productos, accesorios"

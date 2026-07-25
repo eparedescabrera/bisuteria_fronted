@@ -24,6 +24,7 @@ export default function ContactPage() {
       <Seo
         title="Contacto"
         siteName={brand}
+        logoUrl={config?.logo_url}
         description={`Teléfono, WhatsApp, ubicación y redes de ${brand}.`}
         path={tp('/contacto')}
       />

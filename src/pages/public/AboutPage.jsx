@@ -11,6 +11,7 @@ export default function AboutPage() {
       <Seo
         title="Nosotros"
         siteName={config?.nombre_negocio}
+        logoUrl={config?.logo_url}
         description={`Conoce la historia de ${config?.nombre_negocio || 'esta tienda'}.`}
         path={tp('/nosotros')}
       />
