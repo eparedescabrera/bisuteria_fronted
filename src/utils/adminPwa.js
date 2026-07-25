@@ -40,7 +40,12 @@ export function enableAdminPwa({ brand } = {}) {
   upsert('manifest', { rel: 'manifest', href: '/manifest.webmanifest' });
   upsert('apple-touch-icon', {
     rel: 'apple-touch-icon',
-    href: '/apple-touch-icon.png'
+    href: '/images/logo-plataforma.png'
+  });
+  upsert('icon', {
+    rel: 'icon',
+    type: 'image/png',
+    href: '/images/logo-plataforma.png'
   });
   upsertMeta('theme-color', '#0f234c');
   upsertMeta('apple-mobile-web-app-capable', 'yes');

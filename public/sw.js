@@ -1,11 +1,10 @@
 /* Service worker del panel administrativo (login + /admin). */
-const CACHE = 'panel-admin-v1';
+const CACHE = 'panel-admin-v2';
 const PRECACHE = [
   '/login',
   '/manifest.webmanifest',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/apple-touch-icon.png'
+  '/images/logo-plataforma.png',
+  '/favicon-192.png'
 ];
 
 self.addEventListener('install', (event) => {
